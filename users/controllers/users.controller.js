@@ -3,13 +3,26 @@ const crypto = require('crypto');
 
 exports.insert = (req, res) => {
     console.log('Request is' , req.body);
-    let salt = crypto.randomBytes(16).toString('base64');
-    let hash = '1234';
-    req.body.password = salt + "$" + hash;
-    req.body.permissionLevel = 1;
+    req.body.password="1111";
     UserModel.createUser(req.body)
         .then((result) => {
             res.status(201).send({id: result._id});
+            console.log("Check write status", result);
+        });
+};
+
+exports.authenticate = (req, res) => {
+    
+    UserModel.findByEmail(req.body.email)
+        .then((result) => {
+            if(result[0].password === req.body.password){
+                console.log("Authentication Successful")
+                res.status(200).send(JSON.stringify(result));
+            }
+            else{
+                
+                res.status(401).send("Error"); 
+            }
             console.log("Check write status", result);
         });
 };
